@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Flasky{% endblock %}
+
+{%block head %}
+	{{ super() }}
+	<meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Ensures optimal rendering on mobile devices. -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!-- Optimal Internet Explorer compatibility -->
+	<link rel="apple-touch-icon" sizes="57x57" href="/static/icons/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/static/icons/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/static/icons/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/static/icons/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/static/icons/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/static/icons/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/static/icons/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/static/icons/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/static/icons/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="144x144"  href="/static/icons/android-icon-144x144.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+	<link rel="manifest" href="/static/icons/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/static/icons/ms-icon-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+{% endblock %}
+
+{%block content %}
+	<script
+	src="https://www.paypal.com/sdk/js?client-id=AYrhznbJBPsY238XkxNDMXj9RYgaT1-PwD9c4SULQQhaNhtkMNQfi8mLGqwdv2HVXAE4GMaLx5iUGi5m&currency=BRL"> // Required. Replace SB_CLIENT_ID with your sandbox client ID.
+	</script>
+	<div class="container"> 
+		<div id="paypal-button-container"></div>
+	</div>
+	
+	<script>
+		paypal.Buttons({
+			onError: function (err) {
+				alert(err)
+			},
+			createOrder: function(data, actions) {
+			  // This function sets up the details of the transaction, including the amount and line item details.
+			  return actions.order.create({
+			    purchase_units: [{
+			      amount: {
+			      	currency: 'BRL',
+			        value: '{{value}}'
+			      }
+			    }]
+			  });
+			},
+			onApprove: function(data, actions) {
+				fetch('/confirmPayment', {
+			  	method:"POST",
+			    headers: {
+			      'content-type': 'application/json'
+			    },
+			    body: JSON.stringify({
+			      orderID: data.orderID
+			    })});
+                return actions.order.capture().then(function(details) {
+                    // Show a success message to the buyer
+                    alert('Transaction completed by ' + details.payer.name.given_name + '!');
+                });
+            }
+            
+
+
+        }).render('#paypal-button-container');
+		
+
+
+	</script>
+
+{% endblock %}

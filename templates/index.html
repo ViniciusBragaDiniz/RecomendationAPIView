@@ -1,0 +1,77 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block title %}Flasky{% endblock %}
+
+
+{% block content %}
+<div class="container">
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+</div>
+{% endfor %}
+</div>
+
+<script type="text/javascript">
+	function ShowSUPButton() {
+	var form = document.getElementById("form");
+	var form2 = document.getElementById("form2")
+	var SUP = document.getElementById('SUPButton');
+	var SI = document.getElementById('SIButton');
+		if (form.style.display === "none") {
+			form.style.display = "block";
+			form2.style.display= "none";
+			SUP.disabled = true;
+			SI.disabled = false;
+		}
+	}
+
+	function ShowSIButton() {
+	var form = document.getElementById("form");
+	var form2 = document.getElementById("form2");
+	var SUP = document.getElementById('SUPButton');
+	var SI = document.getElementById('SIButton');
+		if (form2.style.display === "none") {
+			form2.style.display = "block";
+			form.style.display= "none";
+			form.disabled = true
+			SUP.disabled = false;
+			SI.disabled=true;
+		}
+	}
+</script>
+<div class = "container">
+	<button type="button" class="btn btn-primary" onclick="ShowSUPButton()" id="SUPButton" disabled>Cadastre-se</button>
+	<button button type="button" class="btn btn-secondary" onclick="ShowSIButton()" id= "SIButton">Entrar</button>
+</div>
+
+
+<div class="container" id = "form">
+	
+	<br><br>
+	<form action="{{url_for(signUp)}}", method="POST">
+		{% for field in form %}
+		{%if field.id != "csrf_token"%}
+   		{{wtf.form_field(field)}}
+   		{%endif%}
+		{% endfor %}
+
+	</form>
+</div>
+<div class="container" id = "form2" style="display: none;">
+	<form action="{{url_for(signIn)}}", method="POST">
+		{% for field in form2 %}
+		{%if field.id != "csrf_token"%}
+   		{{wtf.form_field(field)}}
+   		{%endif%}
+		{% endfor %}
+
+	</form>
+</div>
+
+
+
+{% endblock %}
+

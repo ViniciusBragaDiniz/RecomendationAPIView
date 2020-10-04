@@ -1,0 +1,122 @@
+{%extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{%block content%}
+<style> 
+#main {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+#main div {
+   flex: 1;
+}
+
+</style>
+<script type="text/javascript">
+ 	function showID(){
+ 		if(document.getElementById('ID').hidden == true){
+	 		document.getElementById('ID').hidden = false;
+	 		document.getElementById('Score').hidden = true;
+	 		document.getElementById('Atualizar').hidden = true;
+	 		document.getElementById('Apagar').hidden = true;
+	 	}
+	 	else{
+	 		document.getElementById('ID').hidden = true;
+	 	}
+ 	}
+ 	function searchColab(){
+ 		if(document.getElementById('Score').hidden == true){
+	 		document.getElementById('ID').hidden = true;
+	 		document.getElementById('Score').hidden = false;
+	 		document.getElementById('Atualizar').hidden = true;
+	 		document.getElementById('Apagar').hidden = true;
+ 		}
+ 		else{
+	 		document.getElementById('Score').hidden = true;
+	 	}
+	 }
+ </script>
+<div class="container">
+	{%if status and status>= 400%}
+	{% for message in get_flashed_messages() %}
+	<div class="alert alert-danger">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    {{ message }}
+	</div>
+	{% endfor %}
+	{%else%}
+	{% for message in get_flashed_messages() %}
+	<div class="alert alert-success">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    {{ message }}
+	</div>
+	{% endfor %}
+	{%endif%}
+</div>
+
+<div class="container" id="main">
+	<button type="button" class="btn btn-primary btn-lg btn-block" onclick="showID()">Seu ID</button>
+	<div class="container" style="width: 100%" id="ID" hidden>
+		<p class="text-center" style="font-size: 20px;">{{_id}}</p>
+	</div>
+</div>
+<br>
+<div class="container" id="main">
+	<button type="button" class="btn btn-primary btn-lg btn-block" onclick="searchColab()">Pontuação</button>
+	<div class="container" style="width: 100%" id="Score" hidden >
+		<form  action="/colaboratorInfo/Score" method="POST">
+		{% for field in form2 %}
+		{%if field.id != "csrf_token"%}
+   		{{field(class_="form-control")}}
+   		{%endif%}
+		{% endfor %}
+		</form>
+	</div>
+</div>
+<br>
+
+<div class="container" id="result" style="height: 600px; width:auto; overflow-y:auto;overflow-x: auto;">
+	{%if info%}
+	{%for application in info%}
+	<h4 style="text-align: center;">Nome da Aplicação: {{application}}</h4>
+	<h4 style="text-align: center;">Média da Aplicação: {{info2[application+"_mean"]}}</h4>
+	<div class = "container"  style="height: 200px;overflow-y:auto;overflow-x: auto;">
+		<table class="table table-dark">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Avaliação</th>
+					<th scope="col">Horário</th>
+					<th scope="col">Comentário</th>
+					{%for i in info2[application+"_questions"]%}
+					<th scope="col">{{i}}</th>
+					{%endfor%}
+				</tr>
+			</thead>
+			<tbody>
+				
+				{%for evaluation in info[application]%}
+				<tr>
+					<th scope="row">{{loop.index}}</th>
+					<td>{{evaluation["evaluation"]}}</td>
+					<td>{{evaluation["evaluation_time"]}}</td>
+					<td>{{evaluation["comment"]}}</td>
+					{%for q in info2[application+"_questions"]%}
+					<td>{{evaluation["questions"][q]}}</td>
+					{%endfor%}
+				</tr>
+				{%endfor%}
+					
+			</tbody>
+		</table>
+	</div>
+	<br>
+	{%endfor%}
+	{%endif%}
+</div>
+
+{%endblock%}
+
