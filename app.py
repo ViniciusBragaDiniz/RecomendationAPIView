@@ -11,6 +11,7 @@ import secrets
 import hashlib
 import requests
 import json
+import os
 
 mb_user = "Vinicius"
 pwd = "sYlrvbXJUtKyvwBZ"
